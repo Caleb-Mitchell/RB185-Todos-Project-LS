@@ -6,7 +6,7 @@ require "tilt/erubis"
 configure do
   enable :sessions
   set :session_secret, 'secret'
-  set :erb, :escape_html => true
+  set :erb, escape_html: true
 end
 
 helpers do
@@ -26,23 +26,27 @@ helpers do
     list[:todos].count { |todo| !todo[:completed] }
   end
 
-  def sort_lists(lists, &block)
-    complete_lists, incomplete_lists = lists.partition { |list| list_complete?(list) }
+  def sort_lists(lists, &)
+    complete_lists, incomplete_lists = lists.partition do |list|
+      list_complete?(list)
+    end
 
-    incomplete_lists.each(&block)
-    complete_lists.each(&block)
+    incomplete_lists.each(&)
+    complete_lists.each(&)
   end
 
-  def sort_todos(todos, &block)
-    complete_todos, incomplete_todos = todos.partition { |todo| todo[:completed] }
+  def sort_todos(todos, &)
+    complete_todos, incomplete_todos = todos.partition do |todo|
+      todo[:completed]
+    end
 
-    incomplete_todos.each(&block)
-    complete_todos.each(&block)
+    incomplete_todos.each(&)
+    complete_todos.each(&)
   end
 end
 
 def load_list(id)
-  list = session[:lists].find{ |list| list[:id] == id }
+  list = session[:lists].find { |list| list[:id] == id }
   return list if list
 
   session[:error] = "The specified list was not found."
@@ -61,9 +65,8 @@ end
 
 # Return an error message if the name is invalid. Return nil if name is valid.
 def error_for_todo(name)
-  if !(1..100).cover? name.size
-    "Todo must be between 1 and 100 characters."
-  end
+  return unless !(1..100).cover? name.size
+  "Todo must be between 1 and 100 characters."
 end
 
 def next_element_id(elements)
@@ -100,7 +103,7 @@ post "/lists" do
     erb :new_list, layout: :layout
   else
     id = next_element_id(session[:lists])
-    session[:lists] << { id: id, name: list_name, todos: [] }
+    session[:lists] << { id:, name: list_name, todos: [] }
     session[:success] = "The list has been created."
     redirect "/lists"
   end
@@ -161,7 +164,7 @@ post "/lists/:list_id/todos" do
     erb :list, layout: :layout
   else
     id = next_element_id(@list[:todos])
-    @list[:todos] << { id: id, name: text, completed: false }
+    @list[:todos] << { id:, name: text, completed: false }
 
     session[:success] = "The todo was added."
     redirect "/lists/#{@list_id}"
