@@ -9,6 +9,7 @@ configure do
   set :erb, escape_html: true
 end
 
+# rubocop:disable Metrics/BlockLength
 helpers do
   def list_complete?(list)
     todos_count(list) > 0 && todos_remaining_count(list) == 0
@@ -44,9 +45,10 @@ helpers do
     complete_todos.each(&)
   end
 end
+# rubocop:enable Metrics/BlockLength
 
 def load_list(id)
-  list = session[:lists].find { |list| list[:id] == id }
+  list = session[:lists].find { |session_list| session_list[:id] == id }
   return list if list
 
   session[:error] = "The specified list was not found."
@@ -193,7 +195,7 @@ post "/lists/:list_id/todos/:id" do
 
   todo_id = params[:id].to_i
   is_completed = params[:completed] == "true"
-  todo = @list[:todos].find { |todo| todo[:id] == todo_id }
+  todo = @list[:todos].find { |list_todo| list_todo[:id] == todo_id }
   todo[:completed] = is_completed
 
   session[:success] = "The todo has been updated."
