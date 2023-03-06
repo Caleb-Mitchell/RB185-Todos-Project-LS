@@ -17,7 +17,6 @@ configure(:development) do
   also_reload "database_persistence.rb"
 end
 
-# rubocop:disable Metrics/BlockLength
 helpers do
   def list_complete?(list)
     list[:todos_count] > 0 && list[:todos_remaining_count] == 0
@@ -25,14 +24,6 @@ helpers do
 
   def list_class(list)
     "complete" if list_complete?(list)
-  end
-
-  def todos_count(list)
-    list[:todos].size
-  end
-
-  def todos_remaining_count(list)
-    list[:todos].count { |todo| !todo[:completed] }
   end
 
   def sort_lists(lists, &)
@@ -53,7 +44,6 @@ helpers do
     complete_todos.each(&)
   end
 end
-# rubocop:enable Metrics/BlockLength
 
 def load_list(id)
   list = @storage.find_list(id)
@@ -116,6 +106,7 @@ end
 get "/lists/:id" do
   @list_id = params[:id].to_i
   @list = load_list(@list_id)
+  @todos = @storage.find_todos_for_list(@list_id)
   erb :list, layout: :layout
 end
 
